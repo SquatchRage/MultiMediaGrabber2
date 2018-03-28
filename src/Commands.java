@@ -1,12 +1,16 @@
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 public class Commands {
 	
 	String message;
+	Talker talk;
 	
-	public Commands(String message){
+	public Commands(String message, Talker talk){
 		this.message = message;
+		this.talk = talk;
 		commands();
 	}
 	
@@ -18,6 +22,7 @@ public class Commands {
 		}
 		
 		else if(message.startsWith("Show Message")){
+			//System.out.println("COMMANDS :"+message);
 			SwingUtilities.invokeLater(new Runnable()
 					{ @Override
 				public void run(){
@@ -36,7 +41,12 @@ public class Commands {
 			{
 				 public void run()
 				 {
-						new Search();
+						try {
+							new Search(talk);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 
 					
 
